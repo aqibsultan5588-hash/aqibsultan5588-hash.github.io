@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⭐ Star Catcher - Kids Game</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#4facfe">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Critical fallback - shows immediately */
+    body { margin: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    #game-wrapper { width: 800px; height: 500px; position: relative; background: #87CEEB; overflow: hidden; }
+    .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center; flex-direction: column; }
+    .screen.active { display: flex; }
+  </style>
+</head>
+<body>
+  <div id="game-wrapper">
+    <!-- WELCOME SCREEN -->
+    <div id="welcome-screen" class="screen active">
+      <div class="welcome-clouds"></div>
+      <div class="welcome-star">🌟</div>
+      <h1 class="welcome-title">Star Catcher</h1>
+      <p class="welcome-sub">A fun adventure for kids!</p>
+      <button id="welcome-btn" class="btn btn-play">▶ Let's Go!</button>
+    </div>
+
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen" class="screen">
+      <div class="loading-star">⭐</div>
+      <p class="loading-text">Getting ready...</p>
+      <div class="loading-bar-track">
+        <div id="loading-bar" class="loading-bar-fill"></div>
+      </div>
+      <p id="loading-tip" class="loading-tip"></p>
+    </div>
+
+    <!-- START SCREEN -->
+    <div id="start-screen" class="screen">
+      <div class="star-burst">⭐</div>
+      <h1 class="game-title">Star Catcher</h1>
+      <p class="subtitle">Catch the stars, dodge the baddies!</p>
+      <button id="start-btn" class="btn btn-play">▶ PLAY</button>
+      <div id="start-highscore" class="highscore-display">🏆 Best: 0</div>
+      <div id="start-history" class="history-container"></div>
+      <div class="customize-row">
+        <span class="customize-label">My Color:</span>
+        <button class="color-btn" data-color="#5dade2" style="background:#5dade2"></button>
+        <button class="color-btn" data-color="#e74c3c" style="background:#e74c3c"></button>
+        <button class="color-btn" data-color="#2ecc71" style="background:#2ecc71"></button>
+        <button class="color-btn" data-color="#f39c12" style="background:#f39c12"></button>
+        <button class="color-btn" data-color="#9b59b6" style="background:#9b59b6"></button>
+        <button class="color-btn" data-color="#1abc9c" style="background:#1abc9c"></button>
+      </div>
+      <div class="controls-hint">
+        <span>← → Move</span>
+        <span>↑ Jump ×2</span>
+      </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen">
+      <canvas id="gameCanvas" width="800" height="500"></canvas>
+      <div id="hud">
+        <div id="hud-left">
+          <span id="score-display">⭐ 0</span>
+          <span id="lives-display"></span>
+          <span id="combo-display"></span>
+        </div>
+        <div id="hud-center">
+          <span id="timer-display">⏱ 0:00</span>
+          <span id="powerup-display"></span>
+        </div>
+        <div id="hud-right">
+          <span id="highscore-display">🏆 0</span>
+          <button id="mute-btn" class="hud-btn">🔊</button>
+          <button id="pause-btn" class="hud-btn">⏸</button>
+        </div>
+      </div>
+      <!-- Pause overlay -->
+      <div id="pause-overlay">
+        <div class="pause-box">
+          <h2 class="pause-title">PAUSED</h2>
+          <button id="resume-btn" class="btn btn-play">▶ Resume</button>
+          <button id="quit-btn" class="btn btn-menu">🏠 Quit</button>
+        </div>
+      </div>
+      <!-- Floating achievement toast -->
+      <div id="achievement-toast"></div>
+    </div>
+
+    <!-- TOUCH CONTROLS (only visible on touch devices) -->
+    <div id="touch-controls">
+      <button id="touch-left" class="touch-btn">◀</button>
+      <button id="touch-right" class="touch-btn">▶</button>
+      <button id="touch-jump" class="touch-btn touch-jump">▲</button>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="gameover-screen" class="screen">
+      <div class="gameover-icon">💥</div>
+      <h1 class="gameover-title">Game Over!</h1>
+      <p id="final-score" class="final-score">Score: 0</p>
+      <p id="final-highscore" class="final-highscore">🏆 Best: 0</p>
+      <div id="gameover-history" class="history-container"></div>
+      <button id="restart-btn" class="btn btn-play">▶ Play Again</button>
+      <button id="menu-btn" class="btn btn-menu">🏠 Menu</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
