@@ -212,11 +212,7 @@
   }
 
   function startStarCatcher() {
-    document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('hud-bar')?.classList.add('active');
-    document.getElementById('welcome-screen')?.classList.add('active');
-    if (typeof gameState !== 'undefined') gameState = 'welcome';
+    if (typeof startGame === 'function') startGame();
   }
 
   Hub.init();
