@@ -1,18 +1,19 @@
-const CACHE = 'star-catcher-v1';
+const CACHE = 'kids-zone-v2';
 const FILES = [
   '/',
   '/index.html',
   '/style.css',
+  '/hub.js',
   '/game.js',
+  '/memory.js',
+  '/bubble.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/manifest.json'
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(FILES))
-  );
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)));
   self.skipWaiting();
 });
 
@@ -26,7 +27,5 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((r) => r || fetch(e.request))
-  );
+  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
 });
