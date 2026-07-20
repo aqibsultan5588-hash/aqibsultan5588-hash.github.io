@@ -295,7 +295,7 @@ function checkAchievements(){for(const m of MILESTONES)if(score>=m&&!achievedMil
 function showAchievement(text){const el=document.createElement('div');el.className='achievement-popup';el.textContent=text;document.getElementById('achievement-toast').appendChild(el);setTimeout(()=>el.remove(),2500);}
 
 function startGame() {
-  if(gameState==='playing'||gameState==='loading')return;
+  if(gameState==='playing')return;
   score=0; frameCount=0; gameTime=0; combo=0; maxCombo=0; difficulty=1; lives=MAX_LIVES;
   invincible=false; invincibleTimer=0; activePowerUp=null; powerUpTimer=0;
   shakeIntensity=0; shakeX=0; shakeY=0;
@@ -304,6 +304,7 @@ function startGame() {
   updateScoreDisplay(); updateLivesDisplay(); document.getElementById('powerup-display').textContent='';
   const hl = document.getElementById('hud-level');
   if (hl) hl.textContent = '';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   Hub.switchGame('star-catcher'); currentGame=GAMES.STAR_CATCHER; gameState='playing';
 }
 
@@ -334,7 +335,7 @@ function showScreen(name){
   document.getElementById('pause-overlay').classList.remove('active');
 }
 const loadingTips=['Catch shiny stars to score points!','Dodge the red baddies!','Use double jump to reach higher stars!','How many stars can you collect?','Stay away from angry blocks!','Gold stars are worth 3 points!','Collect power-ups for special abilities!','🛡 Shield protects from one hit!','🧲 Magnet attracts nearby stars!','⏱ Slow-mo slows everything down!'];
-function startLoading(){if(gameState==='loading')return;gameState='loading';showScreen('loading');document.getElementById('loading-bar').style.width='0%';document.getElementById('loading-tip').textContent=loadingTips[Math.floor(Math.random()*loadingTips.length)];let p=0;loadingInterval=setInterval(()=>{const inc=5+Math.random()*15;p=Math.min(p+inc,100);document.getElementById('loading-bar').style.width=p+'%';if(Math.random()<0.15)document.getElementById('loading-tip').textContent=loadingTips[Math.floor(Math.random()*loadingTips.length)];if(p>=100){clearInterval(loadingInterval);loadingInterval=null;setTimeout(()=>{if(gameState==='loading'){showScreen('start');gameState='start';}},300);}},180);}
+function startLoading(){if(gameState==='loading'||gameState==='playing')return;gameState='loading';document.getElementById('hud-bar')?.classList.add('active');showScreen('loading');document.getElementById('loading-bar').style.width='0%';document.getElementById('loading-tip').textContent=loadingTips[Math.floor(Math.random()*loadingTips.length)];let p=0;loadingInterval=setInterval(()=>{const inc=5+Math.random()*15;p=Math.min(p+inc,100);document.getElementById('loading-bar').style.width=p+'%';if(Math.random()<0.15)document.getElementById('loading-tip').textContent=loadingTips[Math.floor(Math.random()*loadingTips.length)];if(p>=100){clearInterval(loadingInterval);loadingInterval=null;setTimeout(()=>{if(gameState==='loading')startGame();},300);}},180);}
 function updateScoreDisplay(){document.getElementById('score-display').textContent=`⭐ ${score}`;document.getElementById('highscore-display').textContent=`🏆 ${highScore}`;const te=document.getElementById('timer-display');if(te){const m=Math.floor(gameTime/60),s=gameTime%60;te.textContent=`⏱ ${m}:${s.toString().padStart(2,'0')}`;}const ce=document.getElementById('combo-display');if(ce)ce.textContent=combo>0?`🔥 x${getComboMultiplier()}`:'';const hs=document.getElementById('hud-score');if(hs)hs.textContent=`⭐ ${score}`;}
 
 function gameLoop() {
