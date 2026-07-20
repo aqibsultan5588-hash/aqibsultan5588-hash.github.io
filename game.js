@@ -359,16 +359,22 @@ document.addEventListener('keydown',(e)=>{
 });
 document.addEventListener('keyup',(e)=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=false;if(e.key==='ArrowRight'||e.key==='d')keys.right=false;if(e.key==='ArrowUp'||e.key==='w'||e.key===' ')keys.jump=false;});
 
+if('ontouchstart'in window||navigator.maxTouchPoints>0){
+  document.getElementById('touch-controls')?.classList.add('active');
+}
+function setupTouchButton(el,key){if(!el)return;el.addEventListener('touchstart',(e)=>{e.preventDefault();e.stopPropagation();keys[key]=true;});el.addEventListener('touchend',(e)=>{e.preventDefault();e.stopPropagation();keys[key]=false;});el.addEventListener('touchcancel',()=>{keys[key]=false;});el.addEventListener('mousedown',()=>{keys[key]=true;});el.addEventListener('mouseup',()=>{keys[key]=false;});el.addEventListener('mouseleave',()=>{keys[key]=false;});}
+setupTouchButton(document.getElementById('touch-left'),'left'); setupTouchButton(document.getElementById('touch-right'),'right'); setupTouchButton(document.getElementById('touch-jump'),'jump');
+
 let touchX=null, touchJumpQueued=false;
-document.getElementById('gameCanvas').addEventListener('touchstart',(e)=>{e.preventDefault();const t=e.touches[0],r=document.getElementById('gameCanvas').getBoundingClientRect();touchX=t.clientX-r.left;touchJumpQueued=true;});
-document.getElementById('gameCanvas').addEventListener('touchmove',(e)=>{e.preventDefault();const t=e.touches[0],r=document.getElementById('gameCanvas').getBoundingClientRect(),nx=t.clientX-r.left;if(nx<touchX-10){keys.left=true;keys.right=false;}else if(nx>touchX+10){keys.right=true;keys.left=false;}else{keys.left=false;keys.right=false;}touchX=nx;});
-document.getElementById('gameCanvas').addEventListener('touchend',(e)=>{e.preventDefault();keys.left=false;keys.right=false;keys.jump=false;touchX=null;});
+(function(){
+  const cv = document.getElementById('gameCanvas');
+  if(!cv)return;
+  cv.addEventListener('touchstart',function(e){e.preventDefault();const t=e.touches[0],r=cv.getBoundingClientRect();touchX=t.clientX-r.left;touchJumpQueued=true;});
+  cv.addEventListener('touchmove',function(e){e.preventDefault();const t=e.touches[0],r=cv.getBoundingClientRect(),nx=t.clientX-r.left;if(nx<touchX-10){keys.left=true;keys.right=false;}else if(nx>touchX+10){keys.right=true;keys.left=false;}else{keys.left=false;keys.right=false;}touchX=nx;});
+  cv.addEventListener('touchend',function(e){e.preventDefault();touchX=null;});
+})();
 
 function processTouchJump(){if(touchJumpQueued){keys.jump=true;touchJumpQueued=false;}}
-
-if('ontouchstart'in window||navigator.maxTouchPoints>0)document.getElementById('touch-controls').classList.add('active');
-function setupTouchButton(el,key){if(!el)return;el.addEventListener('touchstart',(e)=>{e.preventDefault();keys[key]=true;});el.addEventListener('touchend',(e)=>{e.preventDefault();keys[key]=false;});el.addEventListener('touchcancel',()=>{keys[key]=false;});el.addEventListener('mousedown',()=>{keys[key]=true;});el.addEventListener('mouseup',()=>{keys[key]=false;});el.addEventListener('mouseleave',()=>{keys[key]=false;});}
-setupTouchButton(document.getElementById('touch-left'),'left'); setupTouchButton(document.getElementById('touch-right'),'right'); setupTouchButton(document.getElementById('touch-jump'),'jump');
 
 document.getElementById('welcome-btn').addEventListener('click',startLoading);
 document.getElementById('start-btn').addEventListener('click',startGame);
@@ -381,7 +387,7 @@ document.getElementById('quit-btn').addEventListener('click',()=>{paused=false;d
 colorBtns.forEach((btn)=>{btn.addEventListener('click',()=>{colorBtns.forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');setPlayerColor(btn.dataset.color);});});
 const sc=localStorage.getItem('starCatcherColor');if(sc){colorBtns.forEach(b=>{if(b.dataset.color===sc)b.classList.add('selected');});}else document.querySelector('.color-btn')?.classList.add('selected');
 
-const _r=window.requestAnimationFrame; window.requestAnimationFrame=function(cb){return _r.call(window,()=>{processTouchJump();cb();});};
+const _r=window.requestAnimationFrame||window.webkitRequestAnimationFrame; if(_r)window.requestAnimationFrame=function(cb){return _r.call(window,()=>{try{processTouchJump();}catch(e){}cb();});};
 
 document.getElementById('start-highscore').textContent=`🏆 Best: ${highScore}`;
 renderHistory('start-history'); renderHistory('gameover-history');
