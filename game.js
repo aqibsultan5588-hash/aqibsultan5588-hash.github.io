@@ -327,12 +327,13 @@ function gameOver() {
 
 function togglePause(){if(gameState!=='playing')return;paused=!paused;document.getElementById('pause-overlay').classList.toggle('active',paused);}
 function showScreen(name){
-  document.getElementById('welcome-screen').classList.toggle('active',name==='welcome');
-  document.getElementById('loading-screen').classList.toggle('active',name==='loading');
-  document.getElementById('start-screen').classList.toggle('active',name==='start');
-  document.getElementById('game-screen').classList.toggle('active',name==='game');
-  document.getElementById('gameover-screen').classList.toggle('active',name==='gameover');
-  document.getElementById('pause-overlay').classList.remove('active');
+  const ids = ['welcome-screen','loading-screen','start-screen','game-screen','gameover-screen'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', id.replace('-screen','') === name);
+  });
+  const po = document.getElementById('pause-overlay');
+  if (po) po.classList.remove('active');
 }
 const loadingTips=['Catch shiny stars to score points!','Dodge the red baddies!','Use double jump to reach higher stars!','How many stars can you collect?','Stay away from angry blocks!','Gold stars are worth 3 points!','Collect power-ups for special abilities!','🛡 Shield protects from one hit!','🧲 Magnet attracts nearby stars!','⏱ Slow-mo slows everything down!'];
 function startLoading(){if(gameState==='loading'||gameState==='playing')return;gameState='loading';document.getElementById('hud-bar')?.classList.add('active');showScreen('loading');document.getElementById('loading-bar').style.width='0%';document.getElementById('loading-tip').textContent=loadingTips[Math.floor(Math.random()*loadingTips.length)];let p=0;loadingInterval=setInterval(()=>{const inc=5+Math.random()*15;p=Math.min(p+inc,100);document.getElementById('loading-bar').style.width=p+'%';if(Math.random()<0.15)document.getElementById('loading-tip').textContent=loadingTips[Math.floor(Math.random()*loadingTips.length)];if(p>=100){clearInterval(loadingInterval);loadingInterval=null;setTimeout(()=>{if(gameState==='loading')startGame();},300);}},180);}
